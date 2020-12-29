@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func ZipArchive(output string, paths []string) error {
+func ZipArchive(output string, paths []string, filenames []string) error {
 	var compressedFile *os.File
 	var err error
 
@@ -19,17 +19,17 @@ func ZipArchive(output string, paths []string) error {
 	}
 	defer compressedFile.Close()
 
-	if err := compress(compressedFile, ".", paths); err != nil {
+	if err := compress(compressedFile, ".", paths, filenames); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func compress(compressedFile io.Writer, targetDir string, files []string) error {
+func compress(compressedFile io.Writer, targetDir string, paths []string, files []string) error {
 	w := zip.NewWriter(compressedFile)
 
-	for _, filename := range files {
+	for k, filename := range paths {
 		filepath := fmt.Sprintf("%s/%s", targetDir, filename)
 		info, err := os.Stat(filepath)
 		if err != nil {
@@ -50,7 +50,7 @@ func compress(compressedFile io.Writer, targetDir string, files []string) error 
 		if err != nil {
 			return err
 		}
-		hdr.Name = filename
+		hdr.Name = files[k]
 		f, err := w.CreateHeader(hdr)
 		if err != nil {
 			return err
