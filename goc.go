@@ -290,3 +290,10 @@ func Write2DStr(filePath string, data [][]string)error{
 	wf.Close()
 	return nil
 }
+
+func MergeCSV(base_filename string,append_filename string,out_filename string,base_on string,append_on string){
+	base := Read2DStr(base_filename)
+	app := Read2DStr(append_filename)
+	data := Merge(base,app,base_on,append_on)
+	Write2DStr(out_filename,data)
+}
