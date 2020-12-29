@@ -187,3 +187,69 @@ func SpiritCSV(filename string,outputpath string,column string){
 		wf.Close()
 	}
 }
+
+func ReadCSV(path string) (map[string]int, [][]string) {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	reader := BOMCsvReader(file)
+	reader.FieldsPerRecord = -1
+	var line []string
+
+	counter := -1
+	titles := map[string]int{}
+	data := [][]string{}
+	for {
+		counter++
+		line, err = reader.Read()
+		if err != nil {
+			break
+		}
+		if counter == 0 {
+			for k, v := range line {
+				titles[v] = k
+			}
+			continue
+		}
+		data = append(data, line)
+	}
+
+	return titles, data
+}
+
+func Merge(base [][]string,app [][]string,base_on string,app_on string)[][]string{
+
+	apps := map[string][]string{}
+
+	appTitles := map[string]int{}
+	baseTitles := map[string]int{}
+
+	firstLine := append(base[0],app[0]...)
+	
+	for k,line := range app{
+		if k==0{
+			for k,v := range line{
+				appTitles[v] = k
+			}
+			continue
+		}
+		apps[line[appTitles[app_on]]] = line
+	}
+
+	resp := [][]string{firstLine}
+
+	for k,line := range base{
+		if k==0{
+			for k,v := range line{
+				baseTitles[v] = k
+			}
+			continue
+		}
+		resp = append(resp, append(line, apps[line[baseTitles[base_on]]]...))
+	}
+
+	return resp
+}
