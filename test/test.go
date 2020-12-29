@@ -7,5 +7,8 @@ import (
 
 func main(){
 	fmt.Println("start")
-	goc.ZipArchive("zip.zip",[]string{"./goc.go"})
+	err := goc.ZipArchive("zip.zip",[]string{"test.go"})
+	if err != nil{
+		fmt.Println(err)
+	}
 }
