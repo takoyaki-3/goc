@@ -175,7 +175,7 @@ func SpiritCSV(filename string,outputpath string,column string){
 	// Output files
 	for k,v := range buf{
 		// Open write table file
-		wf, werr := os.Create("./splited/" + outputpath + "/" + k + ".csv")
+		wf, werr := os.Create(outputpath + "/" + k + ".csv")
 		if werr != nil {
 			log.Fatal(werr)
 		}
