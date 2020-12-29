@@ -253,3 +253,40 @@ func Merge(base [][]string,app [][]string,base_on string,app_on string)[][]strin
 
 	return resp
 }
+
+func Read2DStr(filePath string)[][]string{
+	file, err := os.Open(filePath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	reader := BOMCsvReader(file)
+	reader.FieldsPerRecord = -1
+
+	data := [][]string{}
+	for {
+		line, err := reader.Read()
+		if err != nil {
+			break
+		}
+		data = append(data, line)
+	}
+
+	return data
+}
+
+func Write2DStr(filePath string, data [][]string)error{
+	// Open write table file
+	wf, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	writer := csv.NewWriter(wf)
+	for _,line := range data{
+		writer.Write(line)
+	}
+	writer.Flush()
+	wf.Close()
+	return nil
+}
