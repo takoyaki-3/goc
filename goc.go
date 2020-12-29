@@ -4,9 +4,11 @@ import (
 	"os"
 	"io"
 	"fmt"
+	"bufio"
 	"io/ioutil"
 	"archive/zip"
 	"path/filepath"
+	"encoding/csv"
 )
 
 func ZipArchive(output string, paths []string, filenames []string) error {
@@ -113,4 +115,16 @@ func Dirwalk(dir string) ([]string,[]string) {
 		file_names = append(file_names,file.Name())
 	}
 	return paths,file_names
+}
+
+func BOMCsvReader(r io.Reader) *csv.Reader {
+	br := bufio.NewReader(r)
+	bs, err := br.Peek(3)
+	if err != nil {
+		return csv.NewReader(br)
+	}
+	if bs[0] == 0xEF && bs[1] == 0xBB && bs[2] == 0xBF {
+		br.Discard(3)
+	}
+	return csv.NewReader(br)
 }
