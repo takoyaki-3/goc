@@ -1,15 +1,15 @@
 package goc
 
 import (
-	"os"
-	"io"
-	"log"
-	"fmt"
-	"bufio"
-	"io/ioutil"
 	"archive/zip"
-	"path/filepath"
+	"bufio"
 	"encoding/csv"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 )
 
 func ZipArchive(output string, paths []string, filenames []string) error {
@@ -89,33 +89,33 @@ func Unzip(src, dest string) error {
 			os.MkdirAll(path, f.Mode())
 		} else {
 			f, err := os.OpenFile(
-					path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+				path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 			if err != nil {
-					return err
+				return err
 			}
 			defer f.Close()
 
 			_, err = io.Copy(f, rc)
 			if err != nil {
-					return err
+				return err
 			}
 		}
 	}
 	return nil
 }
 
-func Dirwalk(dir string) ([]string,[]string) {
+func Dirwalk(dir string) ([]string, []string) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		panic(err)
 	}
 
-	var paths,file_names []string
+	var paths, file_names []string
 	for _, file := range files {
 		paths = append(paths, filepath.Join(dir, file.Name()))
-		file_names = append(file_names,file.Name())
+		file_names = append(file_names, file.Name())
 	}
-	return paths,file_names
+	return paths, file_names
 }
 
 func BOMCsvReader(r io.Reader) *csv.Reader {
@@ -130,7 +130,7 @@ func BOMCsvReader(r io.Reader) *csv.Reader {
 	return csv.NewReader(br)
 }
 
-func SpiritCSV(filename string,outputpath string,column string){
+func SpiritCSV(filename string, outputpath string, column string) {
 
 	buf := map[string][][]string{}
 
@@ -156,31 +156,31 @@ func SpiritCSV(filename string,outputpath string,column string){
 		if er != nil {
 			break
 		}
-		if counter==0{
+		if counter == 0 {
 			first_line = line
-			for k,v := range line{
-				titles[v]=k
+			for k, v := range line {
+				titles[v] = k
 			}
 			continue
 		}
 		id := line[titles[column]]
-		if _,ok := buf[id]; !ok{
+		if _, ok := buf[id]; !ok {
 			buf[id] = [][]string{first_line}
 		}
-		if len(first_line) == len(line){
-			buf[id] = append(buf[id],line)
-		}
+		// if len(first_line) == len(line){
+		// 	buf[id] = append(buf[id],line)
+		// }
 	}
 
 	// Output files
-	for k,v := range buf{
+	for k, v := range buf {
 		// Open write table file
 		wf, werr := os.Create(outputpath + "/" + k + ".csv")
 		if werr != nil {
 			log.Fatal(werr)
 		}
 		writer := csv.NewWriter(wf)
-		for _,line := range v{
+		for _, line := range v {
 			writer.Write(line)
 		}
 		writer.Flush()
@@ -220,18 +220,18 @@ func ReadCSV(path string) (map[string]int, [][]string) {
 	return titles, data
 }
 
-func Merge(base [][]string,app [][]string,base_on string,app_on string)[][]string{
+func Merge(base [][]string, app [][]string, base_on string, app_on string) [][]string {
 
 	apps := map[string][]string{}
 
 	appTitles := map[string]int{}
 	baseTitles := map[string]int{}
 
-	firstLine := append(base[0],app[0]...)
-	
-	for k,line := range app{
-		if k==0{
-			for k,v := range line{
+	firstLine := append(base[0], app[0]...)
+
+	for k, line := range app {
+		if k == 0 {
+			for k, v := range line {
 				appTitles[v] = k
 			}
 			continue
@@ -241,9 +241,9 @@ func Merge(base [][]string,app [][]string,base_on string,app_on string)[][]strin
 
 	resp := [][]string{firstLine}
 
-	for k,line := range base{
-		if k==0{
-			for k,v := range line{
+	for k, line := range base {
+		if k == 0 {
+			for k, v := range line {
 				baseTitles[v] = k
 			}
 			continue
@@ -254,7 +254,7 @@ func Merge(base [][]string,app [][]string,base_on string,app_on string)[][]strin
 	return resp
 }
 
-func Read2DStr(filePath string)[][]string{
+func Read2DStr(filePath string) [][]string {
 	file, err := os.Open(filePath)
 	if err != nil {
 		panic(err)
@@ -276,14 +276,14 @@ func Read2DStr(filePath string)[][]string{
 	return data
 }
 
-func Write2DStr(filePath string, data [][]string)error{
+func Write2DStr(filePath string, data [][]string) error {
 	// Open write table file
 	wf, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
 	writer := csv.NewWriter(wf)
-	for _,line := range data{
+	for _, line := range data {
 		writer.Write(line)
 	}
 	writer.Flush()
@@ -291,9 +291,9 @@ func Write2DStr(filePath string, data [][]string)error{
 	return nil
 }
 
-func MergeCSV(base_filename string,append_filename string,out_filename string,base_on string,append_on string){
+func MergeCSV(base_filename string, append_filename string, out_filename string, base_on string, append_on string) {
 	base := Read2DStr(base_filename)
 	app := Read2DStr(append_filename)
-	data := Merge(base,app,base_on,append_on)
-	Write2DStr(out_filename,data)
+	data := Merge(base, app, base_on, append_on)
+	Write2DStr(out_filename, data)
 }
