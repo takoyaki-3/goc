@@ -314,7 +314,7 @@ func Select2DStr(columns []string,data [][]string)[][]string{
 	ans := [][]string{}
 	for _,v:=range data{
 		line := []string{}
-		for k,_ := range selectList{
+		for _,k := range selectList{
 			line = append(line, v[k])
 		}
 		ans = append(ans, line)
