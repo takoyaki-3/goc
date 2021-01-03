@@ -168,7 +168,7 @@ func SpiritCSV(filename string, outputpath string, column string) {
 			buf[id] = [][]string{first_line}
 		}
 		// if len(first_line) == len(line){
-		// 	buf[id] = append(buf[id],line)
+		buf[id] = append(buf[id],line)
 		// }
 	}
 
