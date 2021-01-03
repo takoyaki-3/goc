@@ -297,3 +297,27 @@ func MergeCSV(base_filename string, append_filename string, out_filename string,
 	data := Merge(base, app, base_on, append_on)
 	Write2DStr(out_filename, data)
 }
+
+func Select2DStr(columns []string,data [][]string)[][]string{
+	selectList := []int{}
+	for _,v := range columns{
+		for kk,vv := range data{
+			if len(vv) < 1{
+				continue
+			}
+			if vv[0] != v {
+				continue
+			}
+			selectList = append(selectList, kk)
+		}
+	}
+	ans := [][]string{}
+	for _,v:=range data{
+		line := []string{}
+		for _,k := range selectList{
+			line = append(line, v[k])
+		}
+		ans = append(ans, line)
+	}
+	return ans
+}
