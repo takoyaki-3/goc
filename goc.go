@@ -228,6 +228,7 @@ func Merge(base [][]string, app [][]string, base_on string, app_on string) [][]s
 	baseTitles := map[string]int{}
 
 	firstLine := append(base[0], app[0]...)
+	notFound := make([]string,len(app[0]))
 
 	for k, line := range app {
 		if k == 0 {
@@ -248,7 +249,11 @@ func Merge(base [][]string, app [][]string, base_on string, app_on string) [][]s
 			}
 			continue
 		}
-		resp = append(resp, append(line, apps[line[baseTitles[base_on]]]...))
+		if v,ok:=apps[line[baseTitles[base_on]]];ok{
+			resp = append(resp, append(line, v...))
+		} else {
+			resp = append(resp, append(line, notFound...))
+		}
 	}
 
 	return resp
