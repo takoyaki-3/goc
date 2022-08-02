@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sync"
 	"path/filepath"
 )
 
@@ -325,4 +326,19 @@ func Select2DStr(columns []string,data [][]string)[][]string{
 		ans = append(ans, line)
 	}
 	return ans
+}
+
+// コア数,総ループ数,呼び出し関数(インデックス,スレッド番号)
+func Parallel(core int,n int,f func(int,int)){
+	wg := sync.WaitGroup{}
+	wg.Add(core)
+	for rank:=0;rank<core;rank++{
+		go func(rank int){
+			defer wg.Done()
+			for i:=rank;i<n;i+=core{
+				f(i,rank)
+			}
+		}(rank)
+	}
+	wg.Wait()
 }
