@@ -11,6 +11,9 @@ import (
 	"os"
 	"sync"
 	"path/filepath"
+	"net/http"
+	"errors"
+	json "github.com/takoyaki-3/go-json"
 )
 
 func ZipArchive(output string, paths []string, filenames []string) error {
@@ -341,4 +344,19 @@ func Parallel(core int,n int,f func(int,int)){
 		}(rank)
 	}
 	wg.Wait()
+}
+
+// HTTP リクエストクエリを取得する
+func GetQuery(r *http.Request, q interface{})error{
+	v := r.URL.Query()
+	if v == nil {
+		return errors.New("not found query JSON.")
+	}
+	if strs,ok:=v["json"];ok{
+		return json.LoadFromString(strs[0],&q)
+	}
+	return errors.New("not found query JSON.")
+}
+func GetPostQuery(r *http.Request, q interface{})error{
+	return json.LoadFromReader(r.Body,&q)
 }
